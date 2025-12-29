@@ -1820,6 +1820,8 @@ class Network:
             else:
                 print("\n Solver did not converged successfully")
 
+        print(sol)
+
     def solve_system_notebook(self, acc=1e-6, max_iter=50):
         """
         Solve the network using a minimal, notebook-safe configuration.
@@ -1847,7 +1849,7 @@ class Network:
 
                 x0[i] = v.initial_value * v.scale_factor
 
-            sol = scipy.optimize.root(self._solve_econs, x0
+            sol = scipy.optimize.root(self._solve_econs, x0)
 
             if sol.success:
                 self._solve(sol["x"])
@@ -1902,7 +1904,7 @@ class Network:
             else:
                 print("\n Solver did not converged successfully")
 
-        return sol
+        print(sol)
 
     def _solve(self, x):
         """
