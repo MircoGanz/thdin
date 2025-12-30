@@ -14,6 +14,8 @@ import scipy
 from CoolProp.CoolProp import PropsSI
 import multiprocessing as mp
 from copy import deepcopy
+import matplotlib.pyplot as plt
+from labellines import labelLines
 from multiprocessing.dummy import freeze_support
 
 
@@ -2228,3 +2230,113 @@ def _worker_eval_vec(args):
         return clone._solve_econs(x)
     else:
         return clone._solve_iecons(x)
+
+
+def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
+    """
+    Plot the pressure-enthalpy diagram for a given fluid.
+
+    Args:
+        h (array-like): List or array lists of specific enthalpy values.
+        p (array-like): List or array of lists of pressure values.
+        no: (array-like): List or array of list of state numbers
+        fluids (str): Name of the fluid.
+
+    Returns:
+        None
+    """
+
+    for i, fluid in enumerate(fluids):
+
+        Fig = [plt.subplots(figsize=(12, 8))] * len(fluids)
+        Tmin = PropsSI('TMIN', fluid)
+        Pmin = PropsSI('PMIN', fluid)
+        Tcrit = PropsSI("Tcrit", fluid)
+        Pcrit = PropsSI("Pcrit", fluid)
+        Ts = [Tmin]
+        while Ts[-1] < Tcrit:
+            T = Ts[-1] + 1
+            if T >= Tcrit:
+                Ts.append(Tcrit)
+            else:
+                Ts.append(T)
+
+        Ps = PropsSI("P", "T", Ts, "Q", 0, fluid) / 100000
+        Hs = PropsSI("H", "T", Ts, "Q", 0, fluid) / 1000
+        Ht = PropsSI("H", "T", Ts, "Q", 1, fluid) / 1000
+        T = np.linspace(Tmin + 1, Tcrit, 20)
+
+        for j in range(len(T)):
+            P1 = np.linspace(1, PropsSI('P', 'T', T[j], 'Q', 1, fluid) - 1, 1000)
+            H1 = PropsSI('H', 'T', T[j], 'P', P1, fluid)
+            P2 = PropsSI('P', 'T', T[j], 'Q', 1, fluid)
+            P1 = np.append(P1, P2)
+            H2 = PropsSI('H', 'T', T[j], 'Q', 1, fluid)
+            H1 = np.append(H1, H2)
+            P3 = PropsSI('P', 'T', T[j], 'Q', 0, fluid)
+            P1 = np.append(P1, P3)
+            H3 = PropsSI('H', 'T', T[j], 'Q', 0, fluid)
+            H1 = np.append(H1, H3)
+            P4 = np.linspace(PropsSI('P', 'T', T[j], 'Q', 0, fluid) + 1, Pcrit + 10000000, 1000)
+            P1 = np.append(P1, P4)
+            H4 = PropsSI('H', 'T', T[j], 'P', P4, fluid)
+            H1 = np.append(H1, H4)
+            Fig[i][1].plot(H1 / 1000, P1 / 100000, 'b', linewidth=0.7,
+                           label='T=' + str(int(T[j] - 273.15)) + '°C')
+
+        P = np.linspace(Pmin, Pcrit + 1e8, 1000)
+        T = [Tcrit + j * 10 for j in range(1, 20)]
+        for j in range(len(T)):
+            H = PropsSI('H', 'P', P, 'T', T[j], fluid)
+            Fig[i][1].plot(np.array(H) / 1e3, P / 1e5, 'b', linewidth=0.7,
+                           label='T=' + str(int(T[j] - 273.15)) + '°C')
+
+        labelLines(Fig[i][1].get_lines(), align=True, fontsize=7, backgroundcolor='none')
+
+        Fig[i][1].plot(Hs, Ps, 'k')
+        Fig[i][1].plot(Ht, Ps, 'k')
+
+        for line in h[i]:
+            if isinstance(line, list):
+                for j in range(len(h[i])):
+                    Fig[i][1].plot(h[i][j], p[i][j], "r-o")
+                    k = 0
+                    for x, y in zip(h[i][j], p[i][j]):
+                        plt.annotate(str(no[i][j][k]),
+                                     (x, y),
+                                     textcoords="offset points",
+                                     xytext=(0, 8),
+                                     ha='right',
+                                     color="red",
+                                     fontweight="bold")
+                        k += 1
+                break
+            else:
+                Fig[i][1].plot(h[i], p[i], "r-o")
+                k = 0
+                for x, y in zip(h[i], p[i]):
+                    plt.annotate(str(no[i][k]),
+                                 (x, y),
+                                 textcoords="offset points",
+                                 xytext=(0, 8),
+                                 ha='right',
+                                 color="red",
+                                 fontweight="bold")
+                    k += 1
+                break
+        if isinstance(h[i][0], list):
+            Fig[i][1].set_xlim([min(min(h[i][:])) - 100, max(max(h[i][:])) + 100])
+            Fig[i][1].set_ylim([min(min(p[i][:])) - 10 ** np.floor(np.log10(min(min(p[i][:])))),
+                                Pcrit * 1e-5 + 10 ** np.floor(np.log10(Pcrit * 1e-4))])
+        else:
+            Fig[i][1].set_xlim([min(h[i]) - 100, max(h[i]) + 100])
+            Fig[i][1].set_ylim([min(p[i]) - 10 ** np.floor(np.log10(min(p[i]))),
+                                Pcrit * 1e-5 + 10 ** np.floor(np.log10(Pcrit * 1e-4))])
+
+        Fig[i][1].set_xlabel('specific Enthalpy / kJ/kg', fontweight='bold')
+        Fig[i][1].set_ylabel('Pressure / bar', fontweight='bold')
+        Fig[i][1].set_yscale('log')
+        Fig[i][1].grid(True)
+        plt.title(fluid)
+        plt.draw()
+        plt.show()
