@@ -2315,14 +2315,14 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
             P1 = np.append(P1, P4)
             H4 = PropsSI('H', 'T', T[j], 'P', P4, fluid)
             H1 = np.append(H1, H4)
-            Fig[i][1].plot(H1 / 1000, P1 / 100000, 'k', linewidth=0.5,
+            Fig[i][1].plot(H1 / 1000, P1 / 100000, 'r', linewidth=0.5,
                            label='T=' + str(int(T[j] - 273.15)) + '°C')
 
         P = np.linspace(Pmin, Pcrit + 1e8, 1000)
         T = [Tcrit + j * 10 for j in range(1, 20)]
         for j in range(len(T)):
             H = PropsSI('H', 'P', P, 'T', T[j], fluid)
-            Fig[i][1].plot(np.array(H) / 1e3, P / 1e5, 'k', linewidth=0.5,
+            Fig[i][1].plot(np.array(H) / 1e3, P / 1e5, 'r', linewidth=0.5,
                            label='T=' + str(int(T[j] - 273.15)) + '°C')
 
         labelLines(Fig[i][1].get_lines(), align=True, fontsize=7, backgroundcolor='none')
@@ -2341,7 +2341,7 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
                                      textcoords="offset points",
                                      xytext=(0, 8),
                                      ha='right',
-                                     color="black",
+                                     color="red",
                                      fontweight="bold")
                         k += 1
                 break
@@ -2354,7 +2354,7 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
                                  textcoords="offset points",
                                  xytext=(0, 8),
                                  ha='right',
-                                 color="black",
+                                 color="red",
                                  fontweight="bold")
                     k += 1
                 break
