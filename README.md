@@ -30,5 +30,6 @@ approach combined with a **tearing-based system reduction**.
 
 ---
 
-## Repository Structure
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MircoGanz/th4din/main?filepath=main.ipynb)
+
 
