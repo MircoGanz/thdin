@@ -2315,14 +2315,14 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
             P1 = np.append(P1, P4)
             H4 = PropsSI('H', 'T', T[j], 'P', P4, fluid)
             H1 = np.append(H1, H4)
-            Fig[i][1].plot(H1 / 1000, P1 / 100000, linewidth=0.5,
+            Fig[i][1].plot(H1 / 1000, P1 / 100000, 'k', linewidth=0.5,
                            label='T=' + str(int(T[j] - 273.15)) + '°C')
 
         P = np.linspace(Pmin, Pcrit + 1e8, 1000)
         T = [Tcrit + j * 10 for j in range(1, 20)]
         for j in range(len(T)):
             H = PropsSI('H', 'P', P, 'T', T[j], fluid)
-            Fig[i][1].plot(np.array(H) / 1e3, P / 1e5, linewidth=0.5,
+            Fig[i][1].plot(np.array(H) / 1e3, P / 1e5, 'k', linewidth=0.5,
                            label='T=' + str(int(T[j] - 273.15)) + '°C')
 
         labelLines(Fig[i][1].get_lines(), align=True, fontsize=7, backgroundcolor='none')
@@ -2333,7 +2333,7 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
         for line in h[i]:
             if isinstance(line, list):
                 for j in range(len(h[i])):
-                    Fig[i][1].plot(h[i][j], p[i][j], "r-o")
+                    Fig[i][1].plot(h[i][j], p[i][j], "k-o")
                     k = 0
                     for x, y in zip(h[i][j], p[i][j]):
                         plt.annotate(str(no[i][j][k]),
@@ -2341,12 +2341,12 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
                                      textcoords="offset points",
                                      xytext=(0, 8),
                                      ha='right',
-                                     color="red",
+                                     color="black",
                                      fontweight="bold")
                         k += 1
                 break
             else:
-                Fig[i][1].plot(h[i], p[i], "r-o")
+                Fig[i][1].plot(h[i], p[i], "k-o")
                 k = 0
                 for x, y in zip(h[i], p[i]):
                     plt.annotate(str(no[i][k]),
@@ -2354,7 +2354,7 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
                                  textcoords="offset points",
                                  xytext=(0, 8),
                                  ha='right',
-                                 color="red",
+                                 color="black",
                                  fontweight="bold")
                     k += 1
                 break
@@ -2367,8 +2367,8 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
             Fig[i][1].set_ylim([min(p[i]) - 10 ** np.floor(np.log10(min(p[i]))),
                                 Pcrit * 1e-5 + 10 ** np.floor(np.log10(Pcrit * 1e-4))])
 
-        Fig[i][1].set_xlabel('specific Enthalpy / kJ/kg', fontweight='bold')
-        Fig[i][1].set_ylabel('Pressure / bar', fontweight='bold')
+        Fig[i][1].set_xlabel('h / kJ/kg', fontweight='bold')
+        Fig[i][1].set_ylabel('log(p) / bar', fontweight='bold')
         Fig[i][1].set_yscale('log')
         Fig[i][1].grid(True)
         plt.title(fluid)
