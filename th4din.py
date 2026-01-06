@@ -1780,7 +1780,7 @@ class Network:
 
         return Vt, exec_list, res_equa, design_equa
 
-    def solve_system(self, acc: float = 1e-6, max_iter: int = 500):
+    def solve_system_parallel(self, acc: float = 1e-6, max_iter: int = 500):
         """
         Solve the thermal–hydraulic network using SLSQP.
 
@@ -1901,7 +1901,7 @@ class Network:
 
         print(sol)
 
-    def solve_system_notebook(self, acc=1e-6, max_iter=50):
+    def solve_system(self, acc=1e-6, max_iter=50):
         """
         Solve the network using a minimal, notebook-safe configuration.
 
@@ -1925,38 +1925,48 @@ class Network:
 
         x0 = np.zeros(n)
 
+        for i, v in enumerate(vars_all):
+            x0[i] = v.initial_value * v.scale_factor
+
+        bounds = []
+
+        for i, v in enumerate(vars_all):
+            x0[i] = v.initial_value * v.scale_factor
+            bounds.append((
+                v.bounds[0] * v.scale_factor,
+                v.bounds[1] * v.scale_factor
+            ))
+
+        constraints = []
+
+        if self.res_equa or self.econs:
+            constraints.append({
+                "type": "eq",
+                "fun": lambda x: self._solve_econs(x),
+            })
+
         if n == len(self.Vt):
 
-            for i, v in enumerate(vars_all):
-
-                x0[i] = v.initial_value * v.scale_factor
-
-            sol = scipy.optimize.root(self._solve_econs, x0)
-
-            if sol.success:
+            sol = scipy.optimize.minimize(
+                fun=lambda x: 0,
+                x0=x0,
+                bounds=bounds,
+                method="SLSQP",
+                constraints=constraints,
+                options={
+                    "ftol": acc,
+                    "maxiter": max_iter,
+                    "disp": True,
+                },
+                callback=self._callback,
+            )
+            if sol["success"]:
                 self._solve(sol["x"])
                 print("\n Solver converged successfully")
             else:
                 print("\n Solver did not converged successfully")
 
         else:
-
-            bounds = []
-
-            for i, v in enumerate(vars_all):
-                x0[i] = v.initial_value * v.scale_factor
-                bounds.append((
-                    v.bounds[0] * v.scale_factor,
-                    v.bounds[1] * v.scale_factor
-                ))
-
-            constraints = []
-
-            if self.res_equa or self.econs:
-                constraints.append({
-                    "type": "eq",
-                    "fun": lambda x: self._solve_econs(x),
-                })
 
             if self.iecons:
                 constraints.append({
@@ -1965,7 +1975,7 @@ class Network:
                 })
 
             # -------------------------------------------------
-            # Solve (SLSQP without gradients)
+            # Solve (SLSQP)
             # -------------------------------------------------
             sol = scipy.optimize.minimize(
                 fun=lambda x: self._solve_objs(x),
