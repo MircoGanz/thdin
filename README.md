@@ -24,6 +24,7 @@ approach combined with a **tearing-based system reduction**.
   - boundary conditions,
   - closed and open fluid loops,
   - additional constraint equations
+-  Simulation using root-finding solver
 - Constrained optimization using Sequential Least Squares Quadratic Programming (SLSQP)
 - Fully implemented in **Python**
 - Reproducible workflows using **Jupyter notebooks**
