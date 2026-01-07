@@ -2334,7 +2334,7 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
             Fig[i][1].plot(np.array(H) / 1e3, P / 1e5, 'k', linewidth=0.5,
                            label='T=' + str(int(T[j] - 273.15)) + '°C')
 
-        labelLines(Fig[i][1].get_lines(), align=True, fontsize=7, backgroundcolor='none')
+        # labelLines(Fig[i][1].get_lines(), align=True, fontsize=7, backgroundcolor='none')
 
         Fig[i][1].plot(Hs, Ps, 'k')
         Fig[i][1].plot(Ht, Ps, 'k')
