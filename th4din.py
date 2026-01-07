@@ -1016,14 +1016,15 @@ class EqualityConstraint:
         Scaling factor applied to the constraint value.
     """
 
-    __slots__ = ("fun", "network", "scale_factor")
+    __slots__ = ("fun", "network", "scale_factor", "is_active")
 
-    def __init__(self, network: "Network", fun: Callable, scale_factor: float = 1.0):
+    def __init__(self, network: "Network", fun: Callable, scale_factor: float = 1.0, is_active=True):
         if not callable(fun):
             raise TypeError("fun must be a callable python function")
         self.fun = fun
         self.network = network
         self.scale_factor = scale_factor
+        self.is_active = is_active
 
     def solve(self):
         """
@@ -1045,6 +1046,9 @@ class EqualityConstraint:
         raise TypeError(
             "equality constraint solve method must return float or numpy array"
         )
+
+    def set_status(self, is_active):
+        self.is_active = is_active
 
 
 class InequalityConstraint:
@@ -1069,14 +1073,15 @@ class InequalityConstraint:
         Scaling factor applied to the constraint value.
     """
 
-    __slots__ = ("fun", "network", "scale_factor")
+    __slots__ = ("fun", "network", "scale_factor", "is_active")
 
-    def __init__(self, network: "Network", fun: Callable, scale_factor: float = 1.0):
+    def __init__(self, network: "Network", fun: Callable, scale_factor: float = 1.0, is_active=True):
         if not callable(fun):
             raise TypeError("fun must be a callable python function")
         self.fun = fun
         self.network = network
         self.scale_factor = scale_factor
+        self.is_active = is_active
 
     def solve(self):
         """
@@ -1098,6 +1103,9 @@ class InequalityConstraint:
         raise TypeError(
             "inequality constraint solve method must return float or numpy array"
         )
+
+    def set_status(self, is_active):
+        self.is_active = is_active
 
 
 class ObjectiveFun:
@@ -1122,14 +1130,15 @@ class ObjectiveFun:
         Weighting factor applied to the objective value.
     """
 
-    __slots__ = ("fun", "network", "scale_factor")
+    __slots__ = ("fun", "network", "scale_factor", "is_active")
 
-    def __init__(self, network: "Network", fun: Callable, scale_factor: float = 1.0):
+    def __init__(self, network: "Network", fun: Callable, scale_factor: float = 1.0, is_active=True):
         if not callable(fun):
             raise TypeError("fun must be a callable python function")
         self.fun = fun
         self.network = network
         self.scale_factor = scale_factor
+        self.is_active = is_active
 
     def solve(self):
         """
@@ -1149,6 +1158,9 @@ class ObjectiveFun:
         if isinstance(res, float):
             return res
         raise TypeError("objective function solve method must return float")
+
+    def set_status(self, is_active):
+        self.is_active = is_active
 
 
 class Network:
@@ -1234,7 +1246,6 @@ class Network:
         fun: Callable,
         ctype: str = "eq",
         scale_factor: float = 1.0,
-        weight_factor: float = 1.0,
     ):
         """
         Add an equality, inequality, or objective function.
@@ -1257,7 +1268,7 @@ class Network:
         elif ctype == "ineq":
             self.iecons[label] = InequalityConstraint(self, fun, scale_factor)
         elif ctype == "obj":
-            self.objs[label] = ObjectiveFun(self, fun, weight_factor)
+            self.objs[label] = ObjectiveFun(self, fun, scale_factor)
         else:
             raise ValueError(f"Unknown constraint type '{ctype}'")
 
@@ -1479,6 +1490,14 @@ class Network:
         param.scale_factor = scale_factor
         param.is_var = is_var
         param.bounds = bounds
+
+    def set_constraint(self, con_name: str, is_active: bool):
+        if con_name in self.econs:
+            self.econs[con_name].set_status(is_active)
+        if con_name in self.iecons:
+            self.iecons[con_name].set_status(is_active)
+        if con_name in self.objs:
+            self.objs[con_name].set_status(is_active)
 
     def print_tearing_variables(self):
         print("Tearing variables:")
@@ -1901,7 +1920,7 @@ class Network:
 
         print(sol)
 
-    def solve_system(self, acc=1e-6, max_iter=50):
+    def solve_system(self, acc=1e-6, max_iter=100):
         """
         Solve the network using a minimal, notebook-safe configuration.
 
@@ -1919,14 +1938,12 @@ class Network:
         for comp in self.components.values():
             comp.reset()
 
+        self.U = []
         self._add_vars()
         vars_all = self.Vt + self.U
         n = len(vars_all)
 
         x0 = np.zeros(n)
-
-        for i, v in enumerate(vars_all):
-            x0[i] = v.initial_value * v.scale_factor
 
         bounds = []
 
@@ -2056,11 +2073,12 @@ class Network:
             res.append(eq.residual())
 
         for c in self.econs.values():
-            val = c.solve()
-            if isinstance(val, (list, tuple, np.ndarray)):
-                res.extend(val)
-            else:
-                res.append(val)
+            if c.is_active:
+                val = c.solve()
+                if isinstance(val, (list, tuple, np.ndarray)):
+                    res.extend(val)
+                else:
+                    res.append(val)
 
         for comp in self.components.values():
             comp.reset()
@@ -2087,7 +2105,8 @@ class Network:
         res = []
 
         for c in self.iecons.values():
-            val = c.solve()
+            if c.is_active:
+                val = c.solve()
             if isinstance(val, (list, tuple, np.ndarray)):
                 res.extend(val)
             else:
@@ -2117,7 +2136,8 @@ class Network:
 
         total = 0.0
         for obj in self.objs.values():
-            total += obj.solve()**2
+            if obj.is_active:
+                total += obj.solve()**2
 
         for comp in self.components.values():
             comp.reset()
@@ -2153,6 +2173,9 @@ class Network:
         """
         r = np.linalg.norm(self._solve_econs(x))
         f = self._solve_objs(x)
+        for obj in self.objs.values():
+            if obj.is_active:
+                total += obj.solve()**2
         print(
             f"Residual norm = {r:.3e}, Obj = {f:.3e}"
         )
