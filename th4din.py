@@ -2173,9 +2173,6 @@ class Network:
         """
         r = np.linalg.norm(self._solve_econs(x))
         f = self._solve_objs(x)
-        for obj in self.objs.values():
-            if obj.is_active:
-                total += obj.solve()**2
         print(
             f"Residual norm = {r:.3e}, Obj = {f:.3e}"
         )
