@@ -27,8 +27,7 @@ the paper can be executed directly via Binder:
 - Component-based modeling of steady-state thermal–hydraulic systems  
 - Hybrid **causal / acausal** formulation combining input–output component models
   with implicit system-level balance equations  
-- Automatic system assembly using junction-level mass, momentum, and energy
-  conservation  
+- Automatic system assembly using junction-level mass, energy and pressure balance equations
 - Graph-based **tearing algorithm** to reduce the dimensionality of the nonlinear
   equation system  
 - Unified treatment of:
@@ -42,7 +41,7 @@ the paper can be executed directly via Binder:
 - Explicit handling of:
   - boundary conditions,
   - open and closed fluid loops,
-  - additional constraint equations required for well-posedness
+  - additional equality and inequality constraint equations
 - Steady-state simulation using nonlinear root-finding methods  
 - Constrained optimization using **Sequential Least Squares Quadratic Programming
   (SLSQP)**  
