@@ -2,6 +2,7 @@ numpy
 scipy
 matplotlib
 jupyter
+jupyterlab
 notebook
 coolprop
 matplotlib-label-lines
