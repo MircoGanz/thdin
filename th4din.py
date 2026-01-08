@@ -2354,6 +2354,13 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
         #     Fig[i][1].plot(np.array(H) / 1e3, P / 1e5, 'k', linewidth=0.5,
         #                    label='T=' + str(int(T[j] - 273.15)) + '°C')
 
+        P = np.linspace(Pmin, Pcrit + 1e8, 1000)
+        T = [Tcrit + j * 10 for j in range(1, 20)]
+        for j in range(len(T)):
+            H = PropsSI('H', 'P', P, 'T', T[j], fluid)
+            Fig[i][1].plot(np.array(H) / 1e3, P / 1e5, 'k', linewidth=0.5,
+                           label='T=' + str(int(T[j] - 273.15)) + '°C')
+
         # labelLines(Fig[i][1].get_lines(), align=True, fontsize=7, backgroundcolor='none')
 
         Fig[i][1].plot(Hs, Ps, 'k')
