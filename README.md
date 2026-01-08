@@ -1,43 +1,51 @@
-# th4din — Thermal-Hydraulic Network Modeling Framework for Direct and Inverse Problems
+# th4din — Thermal–Hydraulic Network Modeling Framework for Direct and Inverse Problems
 
 **th4din** is an open-source Python framework for steady-state thermal–hydraulic
 network modeling with unified support for **direct** and **inverse** problem
 formulations.
 
-The framework implements the methodology presented in the accompanying paper
+The framework implements the methodology presented in the accompanying paper:
 
 **Mirco Ganz, Frank Tillenkamp, Christian Ghiaus**  
-*Methodology for solving direct and inverse steady-state thermal–hydraulic network problems*
+*Methodology for Solving Direct and Inverse Steady-State Thermal–Hydraulic Network Problems*
 
-and enables the simulation, analysis, and set-point-driven optimization of
-coupled thermal–hydraulic systems using a hybrid **causal–acausal** modeling
-approach combined with a **tearing-based system reduction**.
+and enables simulation, analysis, and set-point-driven optimization of coupled
+thermal–hydraulic systems using a hybrid **causal–acausal** modeling approach
+combined with **graph-based tearing for system reduction**.
 
-A Jupyter Notebook to reproduce the
-test case, presented in the publication, can be executed by the following binder link:
+A fully documented **Jupyter Notebook** reproducing the test case presented in
+the paper can be executed directly via Binder:
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MircoGanz/th4din/main?filepath=main.ipynb)
 
-**Autor**: Mirco Ganz
+**Author:** Mirco Ganz
+
 ---
 
 ## Key Features
 
 - Component-based modeling of steady-state thermal–hydraulic systems  
-- Hybrid **causal / acausal** formulation  
-- Automatic system assembly using junction balance equations  
-- Graph-based tearing algorithm to reduce nonlinear system size  
+- Hybrid **causal / acausal** formulation combining input–output component models
+  with implicit system-level balance equations  
+- Automatic system assembly using junction-level mass, momentum, and energy
+  conservation  
+- Graph-based **tearing algorithm** to reduce the dimensionality of the nonlinear
+  equation system  
 - Unified treatment of:
-  - **Direct problems** (prescribed inputs, solve for system state and outputs)
-  - **Inverse problems** (prescribed subset of outputs, solve for system state and unknown inputs / boundary conditions, parameter identification using simultaneous analysis and design, SAND)
-  - **Optimization** (System optimization with variable design parameter)
+  - **Direct problems**  
+    (prescribed inputs, solution of steady-state system variables and outputs)
+  - **Inverse problems**  
+    (prescribed target outputs, simultaneous solution of system variables and
+    unknown inputs using a SAND formulation)
+  - **Optimization problems**  
+    (design and operational optimization with variable parameters)
 - Explicit handling of:
   - boundary conditions,
-  - closed and open fluid loops,
-  - additional constraint equations
--  Simulation using root-finding solver
-- Constrained optimization using Sequential Least Squares Quadratic Programming (SLSQP)
-- Fully implemented in **Python**
-- Reproducible workflows using **Jupyter notebooks**
+  - open and closed fluid loops,
+  - additional constraint equations required for well-posedness
+- Steady-state simulation using nonlinear root-finding methods  
+- Constrained optimization using **Sequential Least Squares Quadratic Programming
+  (SLSQP)**  
+- Fully implemented in **Python**  
+- Reproducible and transparent workflows based on **Jupyter notebooks**
 
----
