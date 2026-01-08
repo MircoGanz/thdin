@@ -2329,23 +2329,23 @@ def logph(h: List[list], p: List[list], no: List[list], fluids: List[str]):
         Ht = PropsSI("H", "T", Ts, "Q", 1, fluid) / 1000
         T = np.linspace(Tmin + 1, Tcrit, 20)
 
-        for j in range(len(T)):
-            P1 = np.linspace(1, PropsSI('P', 'T', T[j], 'Q', 1, fluid) - 1, 1000)
-            H1 = PropsSI('H', 'T', T[j], 'P', P1, fluid)
-            P2 = PropsSI('P', 'T', T[j], 'Q', 1, fluid)
-            P1 = np.append(P1, P2)
-            H2 = PropsSI('H', 'T', T[j], 'Q', 1, fluid)
-            H1 = np.append(H1, H2)
-            P3 = PropsSI('P', 'T', T[j], 'Q', 0, fluid)
-            P1 = np.append(P1, P3)
-            H3 = PropsSI('H', 'T', T[j], 'Q', 0, fluid)
-            H1 = np.append(H1, H3)
-            P4 = np.linspace(PropsSI('P', 'T', T[j], 'Q', 0, fluid) + 1, Pcrit + 10000000, 1000)
-            P1 = np.append(P1, P4)
-            H4 = PropsSI('H', 'T', T[j], 'P', P4, fluid)
-            H1 = np.append(H1, H4)
-            Fig[i][1].plot(H1 / 1000, P1 / 100000, 'k', linewidth=0.5,
-                           label='T=' + str(int(T[j] - 273.15)) + '°C')
+        # for j in range(len(T)):
+        #     P1 = np.linspace(1, PropsSI('P', 'T', T[j], 'Q', 1, fluid) - 1, 1000)
+        #     H1 = PropsSI('H', 'T', T[j], 'P', P1, fluid)
+        #     P2 = PropsSI('P', 'T', T[j], 'Q', 1, fluid)
+        #     P1 = np.append(P1, P2)
+        #     H2 = PropsSI('H', 'T', T[j], 'Q', 1, fluid)
+        #     H1 = np.append(H1, H2)
+        #     P3 = PropsSI('P', 'T', T[j], 'Q', 0, fluid)
+        #     P1 = np.append(P1, P3)
+        #     H3 = PropsSI('H', 'T', T[j], 'Q', 0, fluid)
+        #     H1 = np.append(H1, H3)
+        #     P4 = np.linspace(PropsSI('P', 'T', T[j], 'Q', 0, fluid) + 1, Pcrit + 10000000, 1000)
+        #     P1 = np.append(P1, P4)
+        #     H4 = PropsSI('H', 'T', T[j], 'P', P4, fluid)
+        #     H1 = np.append(H1, H4)
+        #     Fig[i][1].plot(H1 / 1000, P1 / 100000, 'k', linewidth=0.5,
+        #                    label='T=' + str(int(T[j] - 273.15)) + '°C')
 
         P = np.linspace(Pmin, Pcrit + 1e8, 1000)
         T = [Tcrit + j * 10 for j in range(1, 20)]
