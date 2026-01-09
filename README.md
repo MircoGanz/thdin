@@ -1,10 +1,10 @@
 # th4din — Thermal–Hydraulic Network Modeling Framework for Direct and Inverse Problems
 
-**th4din** is an open-source Python framework for steady-state thermal–hydraulic
+**th4din** is an open-source Python module for steady-state thermal–hydraulic
 network modeling with unified support for **direct** and **inverse** problem
 formulations.
 
-The framework implements the methodology presented in the accompanying paper:
+The module is a python implementation of the methodology presented in the accompanying paper:
 
 **Mirco Ganz, Frank Tillenkamp, Christian Ghiaus**  
 *Methodology for solving direct and inverse steady-State thermal–Hydraulic network problems*
