@@ -10,7 +10,7 @@ The module is a python implementation of the methodology presented in the accomp
 *Methodology for solving direct and inverse steady-State thermal–Hydraulic network problems*
 
 and enables simulation, analysis, and set-point-driven optimization of coupled
-thermal–hydraulic systems using a hybrid **causal–acausal** modeling approach
+thermal–hydraulic network using a hybrid **causal–acausal** modeling approach
 combined with **graph-based tearing for system reduction**.
 
 A fully documented **Jupyter Notebook** reproducing the test case presented in
@@ -24,10 +24,10 @@ the paper can be executed directly via Binder:
 
 ## Key Features
 
-- Component-based modeling of steady-state thermal–hydraulic systems  
+- Component-based modeling of steady-state thermal–hydraulic networks  
 - Hybrid **causal / acausal** formulation combining input–output component models
   with implicit system-level balance equations  
-- Automatic system assembly using junction-level mass, energy and pressure balance equations
+- Automatic network assembly using junction-level mass, energy and pressure balance equations
 - Graph-based **tearing algorithm** to reduce the dimensionality of the nonlinear
   equation system  
 - Unified treatment of:
@@ -35,7 +35,7 @@ the paper can be executed directly via Binder:
     (prescribed inputs, solution of steady-state system variables and outputs)
   - **Inverse problems**  
     (prescribed target outputs, simultaneous solution of system variables and
-    unknown inputs using a SAND formulation)
+    unknown inputs using a simultaneous analysis design formulation)
   - **Optimization problems**  
     (design and operational optimization with variable parameters)
 - Explicit handling of:
